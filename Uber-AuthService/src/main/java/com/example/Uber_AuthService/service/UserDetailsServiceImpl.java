@@ -1,8 +1,8 @@
 package com.example.Uber_AuthService.service;
-
 import com.example.Uber_AuthService.helper.AuthPassengerDetail;
 import com.example.Uber_AuthService.modals.Passenger;
 import com.example.Uber_AuthService.repositories.PassengerRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -13,7 +13,8 @@ import java.util.Optional;
 @Service
 public class UserDetailsServiceImpl implements UserDetailsService {
 
-    private final PassengerRepository passengerRepository;
+
+    private  final PassengerRepository passengerRepository;
 
     public UserDetailsServiceImpl(PassengerRepository passengerRepository) {
         this.passengerRepository = passengerRepository;
