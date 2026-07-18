@@ -1,6 +1,7 @@
 package com.example.Uber_AuthService.helper;
 
 import com.example.Uber_AuthService.modals.Passenger;
+import com.example.Uber_AuthService.service.JwtService;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -10,12 +11,15 @@ import java.util.List;
 //to authenticate and authorize a user.
 public class AuthPassengerDetail extends Passenger implements UserDetails {
 
+
+
     private String username;
     private  String password;
 
     public AuthPassengerDetail(Passenger passenger){
         this.username=passenger.getEmail();
         this.password=passenger.getPassword();
+
     }
 
     @Override

@@ -1,6 +1,7 @@
 package com.example.Uber_AuthService.configuration;
 
 import com.example.Uber_AuthService.repositories.PassengerRepository;
+import com.example.Uber_AuthService.service.JwtService;
 import com.example.Uber_AuthService.service.UserDetailsServiceImpl;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -21,12 +22,14 @@ import org.springframework.security.web.SecurityFilterChain;
 
 public class SecurityConfig  {
     private final UserDetailsService userDetailsService;
+    private final JwtService jwtService;
 
     private final PassengerRepository passengerRepository;
 
-    public SecurityConfig(PassengerRepository passengerRepository, UserDetailsService userDetailsService) {
+    public SecurityConfig(PassengerRepository passengerRepository, UserDetailsService userDetailsService, JwtService jwtService) {
         this.passengerRepository = passengerRepository;
         this.userDetailsService=userDetailsService;
+        this.jwtService=jwtService;
     }
 
 //    @Bean
@@ -38,6 +41,7 @@ public class SecurityConfig  {
 
         http
                 .csrf(csrf -> csrf.disable())
+                .cors(cors-> cors.disable())
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/v1/auth/signup/passenger").permitAll()
                         .requestMatchers("/api/v1/auth/signin/passenger").permitAll()
