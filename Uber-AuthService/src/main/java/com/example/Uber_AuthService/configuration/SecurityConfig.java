@@ -1,8 +1,10 @@
 package com.example.Uber_AuthService.configuration;
 
+import com.example.Uber_AuthService.filters.JwtAuthFilters;
 import com.example.Uber_AuthService.repositories.PassengerRepository;
 import com.example.Uber_AuthService.service.JwtService;
 import com.example.Uber_AuthService.service.UserDetailsServiceImpl;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -15,12 +17,18 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.stereotype.Component;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
 
 
 @Configuration
+@Component
 
 public class SecurityConfig  {
+
+    @Autowired
+    private JwtAuthFilters jwtAuthFilters;
     private final UserDetailsService userDetailsService;
     private final JwtService jwtService;
 
@@ -36,21 +44,27 @@ public class SecurityConfig  {
 //    public UserDetailsService userDetailsService(){
 //        return new UserDetailsServiceImpl(passengerRepository);
 //    }
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
-        http
+        return http
                 .csrf(csrf -> csrf.disable())
-                .cors(cors-> cors.disable())
+                .cors(cors -> cors.disable())
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/v1/auth/signup/passenger").permitAll()
                         .requestMatchers("/api/v1/auth/signin/passenger").permitAll()
-                        .anyRequest().authenticated()
-                );
 
 
-        return http.build();
+                )
+                .authorizeHttpRequests(auth-> auth.requestMatchers("/api/v1/auth/validate").authenticated())
+                .authenticationProvider(authenticationProvider())
+                .addFilterBefore(jwtAuthFilters, UsernamePasswordAuthenticationFilter.class).build();
+
+
     }
+
+
     @Bean
     public AuthenticationProvider authenticationProvider(){
         DaoAuthenticationProvider authenticationProvider=new DaoAuthenticationProvider(userDetailsService);
@@ -72,4 +86,12 @@ public class SecurityConfig  {
     public BCryptPasswordEncoder bCryptPasswordEncoder(){
         return new BCryptPasswordEncoder();
     }
+
+    public void addCorsMapping(CorsRegistry registry){
+        registry.addMapping("/**")
+                .allowCredentials(true)
+                .allowedOriginPatterns("*")
+                .allowedMethods("GET","POST","PUT","DELETE","OPTIONS");
+    }
+
 }

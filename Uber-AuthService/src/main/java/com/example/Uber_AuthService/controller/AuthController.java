@@ -6,6 +6,8 @@ import com.example.Uber_AuthService.DTO.PassengerSignUpRequestDto;
 import com.example.Uber_AuthService.modals.Passenger;
 import com.example.Uber_AuthService.service.AuthService;
 import com.example.Uber_AuthService.service.JwtService;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
@@ -50,10 +52,15 @@ public class AuthController {
     @PostMapping("/signin/passenger")
     public ResponseEntity<?> signIn(@RequestBody AuthRequestDto authRequestDto, HttpServletResponse httpServletResponse) {
         System.out.println("request recieved" + authRequestDto.getEmail() + " " + authRequestDto.getPassword());
+        System.out.println("1. Controller reached");
+        System.out.println("Email: " + authRequestDto.getEmail());
+        System.out.println("Password: " + authRequestDto.getPassword());
 
 
         Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(authRequestDto.getEmail(), authRequestDto.getPassword()));
         String jwtToken = null;
+        System.out.println("2. Authentication successful");
+
         if (authentication.isAuthenticated()) {
             Map<String, Object> payload = new HashMap<>();
             payload.put("email", authRequestDto.getEmail());
@@ -79,5 +86,29 @@ public class AuthController {
                 .body("Login Successful");
 
     }
+
+//    @PostMapping("/validate")
+//    public ResponseEntity<?> validateToken(
+//            @RequestHeader("Authorization") String bearerToken) {
+//        // Spring extracts "Bearer eyJhbGciOi..." automatically
+//        // Your logic to clean the token and send it to ValidationService goes here
+//        bearerToken.
+//    }
+        @PostMapping("/validate")
+        public ResponseEntity<?> validateToken(HttpServletRequest request) {
+            // Get JWT from HttpOnly cookie
+            if (request.getCookies() != null) {
+
+                for (Cookie cookie : request.getCookies()) {
+
+                    if ("jwt".equals(cookie.getName())) {
+                        System.out.println(cookie.getName());
+                        break;
+                    }
+                }
+            }
+
+
+            return ResponseEntity.ok("success");        }
 }
 
